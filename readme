@@ -1,0 +1,16 @@
+Some fiddling/meddling with IP addresses, using the IpToCountry.csv file
+available from http://Software77.net. See http://software77.net/geo-ip/ for
+more information.
+
+Feel free to fiddle with the code too, but there is no guarantee it will work
+correctly, or incorrectly or at all, for you.
+
+The backing database was built using Postgresql on my system. The schema file
+is available in the sql/schema file.
+
+Unit tests using Bacon are in test/test_geo_ip.rb.
+
+Use get_csv.sh to retrieve, and unzip, the IpToCountry.csv file and launch
+add_geo_ip_to_db.rb. (Or not, again there is no guarantee any of this will work
+for you.)
+

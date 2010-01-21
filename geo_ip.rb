@@ -1,19 +1,11 @@
-#!/usr/bin/env ruby
-
-# geo-ip database is available via wget from...
-#
-# http://software77.net/geo-ip/
-#
-# wget software77.net/geo-ip?DL=1 -O /path/to/IpToCountry.csv.gz   gzip
-# wget software77.net/geo-ip?DL=2 -O /path/to/IpToCountry.csv.zip  zip
-# wget software77.net/geo-ip?DL=3 -O /path/to/IpToCountry.csv.MD5  MD5 (CSV file)
-# wget software77.net/geo-ip?DL=4 -O /path/to/IpToCountry.dat      Geo::IPfree
-# wget software77.net/geo-ip?DL=5 -O /path/to/IpToCountry.dat.MD5  MD5 Geo::IPfree
-# wget software77.net/geo-ip?DL=6 -O /path/to/country-codes.txt    Country Codes
-
 module GEO_IP
 
-  # Given an numerical IP number, return it in normal octet format.
+  # Given a Fixnum or Bignum value, return it as an array of four octet values.
+  #
+  # Values < 0 or > 4294967295 raise an ArgumentError.
+  #
+  #   0.to_octets          => [0,0,0,0]
+  #   4294967295.to_octets => [255,255,255,255]
   def to_octets
     raise ArgumentError if (self < 0 || self > 256**4 - 1)
 
@@ -37,14 +29,18 @@ module GEO_IP
     octets
   end
 
-  # Return the octets in decimal format: 
-  #   127.0.0.1
+  # Given a Fixnum or Bignum, return the value in decimal octet format:
+  #
+  #   0.to_dec_octets          => "0.0.0.0"
+  #   4294967295.to_dec_octets => "255.255.255.255"
   def to_dec_octets
     self.to_octets.join('.')
   end
 
-  # Return the octets in hexadecimal format: 
-  #   7f.0.0.1
+  # Given a Fixnum or Bignum, return the value in hexadecimal octet format:
+  #
+  #   0.to_hex_octets          => "00.00.00.00"
+  #   4294967295.to_hex_octets => "ff.ff.ff.ff"
   def to_hex_octets
     self.to_octets.map{ |i| '%02x' % i }.join('.')
   end
@@ -59,7 +55,13 @@ class Bignum
 end
 
 class String
-  # convert a string in decimal octet format to a value
+
+  # Convert a string in decimal octet format to a value.
+  #
+  # Returns a Fixnum or Bignum version of the decimal IP number.
+  #
+  #   '0.0.0.0'.hex_IP_to_value         => 0
+  #   '255.255.255.255'.hex_IP_to_value => 4294967295
   def dec_IP_to_value
     raise ArgumentError if (self[/^\d+\.\d+\.\d+\.\d+$/].nil?)
     octets = self.split('.').reverse
@@ -70,6 +72,12 @@ class String
     value
   end
 
+  # Convert a string in hexadecimal octet format to a value.
+  #
+  # Returns a Fixnum or Bignum version of the hexadecimal IP number.
+  #
+  #   '00.00.00.00'.hex_IP_to_value => 0
+  #   'ff.ff.ff.ff'.hex_IP_to_value => 4294967295
   def hex_IP_to_value
     raise ArgumentError if (self[/^[0-9a-f]{1,2}\.[0-9a-f]{1,2}\.[0-9a-f]{1,2}\.[0-9a-f]{1,2}$/].nil?)
     octets = self.split('.').reverse
@@ -81,25 +89,17 @@ class String
   end
 end
 
-# [
-#   ["0",         "16777215",  "410227200"],
-#   ["50331648",  "67108863",  "572572800"],
-#   ["67108864",  "83886079",  "723168000"],
-#   ["100663296", "117440511", "760060800"],
-#   ["117440512", "134217727", "880329600"],
-#   ["134217728", "150994943", "723168000"],
-#   ["150994944", "167772159", "598233600"]
-# ].each do |i|
-#   s, e, t = i
-#   print s.to_i.to_hex_octets, "\t", e.to_i.to_hex_octets, "\t", Time.at(t.to_i).strftime('%Y-%m-%d'), "\n"
-# end
-
+# Contains the basic fields for an IP record. Maybe this should be expanded to
+# hold the decimal and hexadecimal versions of the IP numbers, but it's easy
+# enough to compute them when needed on the fly.
+#
+# See the header for the IpToCountry.csv file for the meanings of the fields.
 class Geo_IP
   attr_accessor :ip_from, :ip_to, :registry, :assigned, :ctry, :cntry, :country
 
   def initialize(ip_from, ip_to, registry, assigned, ctry, cntry, country)
     
-    # Validate the ip_from, ip_to, and assigned values to make sure they're
+    # Validate @ip_from, @ip_to, and @assigned values to make sure they're
     # either Fixnum or Bignum numerics. This will raise an ArgumentError if
     # not, so wrap code creating instances of this class in a begin/rescue.
     @ip_from  = Integer(ip_from)
@@ -111,6 +111,10 @@ class Geo_IP
     @country  = country
   end
 
+  # Return the instance as a hash.
+  # 
+  # @assigned is mapped to created_on in the database for ActiveRecord
+  # compatibility.
   def to_hash
     {
       :ip_from    => @ip_from,
