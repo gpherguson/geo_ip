@@ -1,0 +1,50 @@
+!!!
+/find_result.haml
+%html
+  %head
+    %title= title
+    :css
+      
+      #ip, #result {
+        padding:1em;
+        margin:1em;
+        border-color:#ccc;
+        border-width:1px;
+        border-style:solid;
+      }
+
+      .label {
+        display: inline-block;
+        width:5em;
+        text-align:right;
+        font-weight:700;
+      }
+
+      .value {
+        display: inline-block;
+        width:10em;
+        text-align:left;
+      }
+      
+      
+  %body
+    #search
+      #ip
+        %span.label Target IP:
+        %span.value= ip
+    #result
+      #id
+        %span.label ID:
+        %span.value= geo_ip[:id]
+      #ip_from
+        %span.label IP from:
+        %span.value= geo_ip[:ip_from_dec]
+      #ip_to
+        %span.label IP to:
+        %span.value= geo_ip[:ip_to_dec]
+      #registry
+        %span.label Registry:
+        %span.value= geo_ip[:registry]
+      #registry
+        %span.label Country:
+        %span.value= geo_ip[:country]

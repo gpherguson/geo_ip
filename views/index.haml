@@ -1,0 +1,17 @@
+!!!
+/index.haml
+%html
+  %head
+    %title= title
+    :css
+  %body
+    %form{:name => :geo_ip_form, :method => :get, :action => '/find'}
+      %fieldset
+        %legend= "&nbsp;#{ title }:&nbsp;"
+
+        %label{:for => :ip} IP:
+        %input{:name => :ip, :type => :text}
+        %br
+
+        %input{:type => :reset}
+        %input{:type => :submit, :value => 'Submit'}
