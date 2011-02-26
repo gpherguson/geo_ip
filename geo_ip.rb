@@ -56,6 +56,14 @@ end
 
 class String
 
+  def is_dec_IP?
+    (self[/^\d+\.\d+\.\d+\.\d+$/]) && split('.').map(&:to_i).all?{ |o| ((0 <= o) && (o <= 255)) }
+  end
+
+  def is_hex_IP?
+    (self[/^[0-9a-f]{1,2}\.[0-9a-f]{1,2}\.[0-9a-f]{1,2}\.[0-9a-f]{1,2}$/]) && split('.').map(&:hex).all?{ |o| ((0 <= o) && (o <= 255)) }
+  end
+
   # Convert a string in decimal octet format to a value.
   #
   # Returns a Fixnum or Bignum version of the decimal IP number.
@@ -95,6 +103,10 @@ end
 #
 # See the header for the IpToCountry.csv file for the meanings of the fields.
 class Geo_IP
+
+  MINIMUM_IP = 0
+  MAXIMUM_IP = (256**4 - 1) # 4294967295
+
   attr_accessor :ip_from, :ip_to, :registry, :assigned, :ctry, :cntry, :country
 
   def initialize(ip_from, ip_to, registry, assigned, ctry, cntry, country)
