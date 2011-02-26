@@ -4,16 +4,20 @@ require 'sequel'
 
 DB_TYPE = :sqlite3 # or :postgres
 
+DB_NAME  = 'geo_ip'
+DB_TABLE = :geo_ips
+DB_DSN   = 'postgres:user:passwd@host/' << DB_NAME
+
 DB = case DB_TYPE
      when :sqlite3
-       Sequel.sqlite('geo_ip')
+       Sequel.sqlite(DB_NAME)
      when :postgres
-       Sequel.connect('postgres:user:passwd@host/geo_ip')
+       Sequel.connect(DB_DSN)
      end
 
-DB.drop_table(:geo_ips) if (DB.tables.include?(:geo_ips))
+DB.drop_table(DB_TABLE) if (DB.tables.include?(DB_TABLE))
 
-DB.create_table :geo_ips do
+DB.create_table(DB_TABLE) do
   primary_key :id
   String :ip_from,     :unique => true
   String :ip_to,       :unique => true
