@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 require 'haml'
-require 'pp'
+# require 'pp'
 require 'sinatra'
 require 'sequel'
 require 'set'
