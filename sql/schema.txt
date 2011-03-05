@@ -1,0 +1,22 @@
+drop table geo_ip;
+create table geo_ip (
+    id         serial primary key,
+    ip_from     text unique,
+    ip_to       text unique,
+    registry    text,
+    created_on  date,
+    ctry        varchar(2),
+    cntry       varchar(3),
+    country     text,
+    ip_from_dec text unique,
+    ip_to_dec   text unique,
+    ip_from_hex text unique,
+    ip_to_hex   text unique
+);
+CREATE INDEX registry_index   ON geo_ip ( registry   );
+CREATE INDEX created_on_index ON geo_ip ( created_on );
+CREATE INDEX ctry_index       ON geo_ip ( ctry       );
+CREATE INDEX cntry_index      ON geo_ip ( cntry      );
+CREATE INDEX country_index    ON geo_ip ( country    );
+
+
